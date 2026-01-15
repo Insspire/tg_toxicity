@@ -1,0 +1,14 @@
+[project]
+name = "ddz"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncio>=4.0.0",
+    "nest-asyncio>=1.6.0",
+    "streamlit>=1.52.2",
+    "telethon>=1.42.0",
+    "torch>=2.9.1",
+    "transformers>=4.57.3",
+]
