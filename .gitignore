@@ -11,4 +11,3 @@ wheels
 
 # Training model files
 checkpoint-*
-models
