@@ -34,7 +34,7 @@
 
 1. **Клонируйте репозиторий** (если еще не сделано):
    ```bash
-   git clone <repository-url>
+   git clone [<repository-url>](https://github.com/Insspire/tg_toxicity.git)
    cd ddz
    ```
 
