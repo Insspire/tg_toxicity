@@ -99,11 +99,14 @@ if analyze_button:
                     comments_list = []
                     for msg in messages:
                         if msg.replies:
-                            for reply in client.iter_messages(
-                                entity, reply_to=msg.id, limit=comment_limit
-                            ):
-                                if reply.message:
-                                    comments_list.append(reply.message)
+                            try:
+                                for reply in client.iter_messages(
+                                    entity, reply_to=msg.id, limit=comment_limit
+                                ):
+                                    if reply.message:
+                                        comments_list.append(reply.message)
+                            except Exception:
+                                continue
 
                     if not comments_list:
                         st.warning("Комментарии не найдены. Убедитесь, что в канале есть посты с комментариями.")
