@@ -1,0 +1,20 @@
+{
+  "labels": [
+    "NORMAL",
+    "INSULT",
+    "THREAT",
+    "OBSCENITY"
+  ],
+  "labels_ru": [
+    "Нейтральный",
+    "Оскорбление/мат",
+    "Угроза",
+    "Непристойность"
+  ],
+  "label_to_id": {
+    "NORMAL": 0,
+    "INSULT": 1,
+    "THREAT": 2,
+    "OBSCENITY": 3
+  }
+}
