@@ -34,8 +34,8 @@
 
 1. **Клонируйте репозиторий** (если еще не сделано):
    ```bash
-   git clone <repository-url>
-   cd ddz
+   git clone https://github.com/Insspire/tg_toxicity.git
+   cd tg_toxicity
    ```
 
 2. **Настройте Telegram API credentials** (опционально):
@@ -93,7 +93,7 @@ docker-compose up --build
 ## Структура проекта
 
 ```
-ddz/
+tg_toxicity/
 ├── app/
 │   ├── app.py              # Основное Streamlit приложение
 │   ├── src/
@@ -108,7 +108,7 @@ ddz/
 ## Примечания
 
 - При первом запуске приложение может запросить авторизацию в Telegram (код из SMS)
-- Сессия Telegram сохраняется в файле `session_simple.session` для последующих запусков
+- Сессия Telegram сохраняется в файле `session_app.session` для последующих запусков
 - При выборе большого количества постов и комментариев анализ может занять значительное время
 - Убедитесь, что канал является публичным и доступен для чтения
 
