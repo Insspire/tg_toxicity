@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: toxicity-analyzer
+    ports:
+      - "8501:8501"
+    volumes:
+      # Монтируем сессию Telegram для сохранения авторизации
+      - ./session_simple.session:/app/session_simple.session
+      # Раскомментируйте следующую строку для разработки (hot-reload кода)
+      # - ./app:/app/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

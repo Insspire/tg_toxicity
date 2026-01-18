@@ -8,8 +8,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 MODEL_PATH = "app/models/toxicity-multilabel-hn"
 THRESHOLD = 0.7
-BATCH_SIZE = 32  # Размер батча для обработки больших объемов данных
-MAX_LENGTH = 512  # Максимальная длина токенизированного текста
+BATCH_SIZE = 32
+MAX_LENGTH = 512
 
 LABELS = ["NORMAL", "INSULT", "THREAT", "OBSCENITY"]
 
@@ -117,11 +117,9 @@ class ToxicityModel:
                     max_prob = prob_value
                     max_label = label_ru
             
-            # Если нет активных меток выше порога, используем метку с максимальной вероятностью
             if not active_labels:
-                active_labels = [max_label]
+                active_labels = ["Нейтральный"]
             
-            # Определяем, является ли комментарий токсичным
             is_toxic = any(label in active_labels for label in TOXIC_CATEGORIES_RU)
             
             result = {

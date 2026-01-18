@@ -7,12 +7,12 @@ from src.toxic_model import load_toxicity_model
 
 nest_asyncio.apply()
 
-API_ID = "37823297"
-API_HASH = "7f9d8be0149036422bd4250f26280b73"
+API_ID = "34929851"
+API_HASH = "8e89fcadcf6eeff26c6aa18cc686d96a"
 
 st.set_page_config(
     page_title="Анализ токсичности Telegram",
-    page_icon="☢️",
+    page_icon="🧪",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
@@ -28,7 +28,6 @@ st.markdown("""
 @st.cache_resource
 def get_model():
     return load_toxicity_model()
-
 
 tox_model = get_model()
 
