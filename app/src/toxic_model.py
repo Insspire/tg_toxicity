@@ -5,7 +5,6 @@ from typing import List, Dict, Any, Optional, Callable
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-
 MODEL_PATH = "app/models/toxicity-multilabel-hn"
 THRESHOLD = 0.7
 BATCH_SIZE = 32
@@ -22,7 +21,6 @@ LABEL_DESCRIPTIONS_RU = {
 }
 
 TOXIC_CATEGORIES_RU = ["Оскорбление/мат", "Угроза", "Непристойность"]
-
 
 class ToxicityModel:
     def __init__(self, model_path: str = MODEL_PATH, threshold: float = THRESHOLD, batch_size: int = BATCH_SIZE, max_length: int = MAX_LENGTH):
