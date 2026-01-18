@@ -1,10 +1,13 @@
 # Python-generated files
-__pycache__/
+__pycache__
 *.py[oc]
-build/
-dist/
-wheels/
+build
+dist
+wheels
 *.egg-info
 
 # Virtual environments
 .venv
+
+# Training model files
+checkpoint-*
