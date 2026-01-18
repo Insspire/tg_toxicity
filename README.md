@@ -34,8 +34,8 @@
 
 1. **Клонируйте репозиторий** (если еще не сделано):
    ```bash
-   git clone [<repository-url>](https://github.com/Insspire/tg_toxicity.git)
-   cd ddz
+   git clone https://github.com/Insspire/tg_toxicity.git
+   cd tg_toxicity
    ```
 
 2. **Настройте Telegram API credentials** (опционально):
