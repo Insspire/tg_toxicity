@@ -50,7 +50,7 @@ with st.container():
         st.markdown("**Количество постов**")
         post_limit_option = st.radio(
             "Выберите количество постов для анализа:",
-            ['10', '50', '100', '200', '500', 'Все'],
+            ['10', '50', '100', '200', '300'],
             horizontal=False,
             help="Чем больше постов, тем точнее анализ, но дольше обработка"
         )
@@ -59,24 +59,25 @@ with st.container():
         st.markdown("**Комментариев на пост**")
         comment_limit_option = st.radio(
             "Выберите количество комментариев:",
-            ['10', '50', '100', '200', '500', '1000', 'Все'],
+            ['10', '50', '100', '300', 'Все'],
             horizontal=False,
             help="Количество комментариев, которые будут проанализированы из каждого поста"
         )
     
-    post_limit = None if post_limit_option == 'Все' else int(post_limit_option)
+    post_limit = int(post_limit_option)
     comment_limit = None if comment_limit_option == 'Все' else int(comment_limit_option)
     
-    if post_limit and comment_limit:
-        estimated_comments = post_limit * comment_limit
-        st.info(f"Будет проанализировано примерно **{estimated_comments}** комментариев")
-    elif post_limit:
-        st.info(f"Будет проанализировано **{post_limit}** постов (количество комментариев зависит от активности в канале)")
-    elif comment_limit:
-        st.info(f"Из каждого поста будет проанализировано **{comment_limit}** комментариев")
-    else:
-        st.info("Будет проанализированы все доступные посты и комментарии (это может занять много времени)")
+    estimated_comments = post_limit * comment_limit if comment_limit else 0
 
+    if estimated_comments == 0 and post_limit >= 100:
+        st.warning(f"Осторожно! Вы выбрали {post_limit} постов для анализа и 'Все' комментарии в них. Это может занять много времени и привести к блокировке, если кличество комментариев будет чрезмерно большим!")
+    elif estimated_comments == 0 and post_limit >= 10 and post_limit < 100:
+        st.info(f"Вы выбрали {post_limit} постов для анализа и 'Все' комментарии в них. Это может занять много времени в случае большого количества комментариев под постами!")
+    else:
+        st.info(f"Будет проанализировано примерно **{estimated_comments}** комментариев")
+        if estimated_comments > 5000:
+            st.warning("Осторожно! Это может занять много времени и привести к блокировке аккаунта.")
+        
 st.markdown("---")
 col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
 with col_btn2:
@@ -165,8 +166,6 @@ if analyze_button:
                             st.metric(
                                 "Токсичных найдено",
                                 f"{len(bad_messages)}",
-                                delta=f"{len(bad_messages) - len(comments_list) // 10}",
-                                delta_color="inverse",
                                 help="Количество комментариев, классифицированных как токсичные"
                             )
                         
