@@ -92,7 +92,7 @@ if analyze_button:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
 
-                with TelegramClient("session_simple", API_ID, API_HASH) as client:
+                with TelegramClient("session_app", API_ID, API_HASH) as client:
                     entity = client.get_entity(f"https://t.me/{channel_username}")
                     messages = client.get_messages(entity, limit=post_limit)
 
@@ -171,13 +171,10 @@ if analyze_button:
                         
                         with col3:
                             if tox_level >= 20:
-                                color_class = "toxicity-high"
                                 emoji = "🔴"
                             elif tox_level >= 10:
-                                color_class = "toxicity-medium"
                                 emoji = "🟡"
                             else:
-                                color_class = "toxicity-low"
                                 emoji = "🟢"
                             
                             st.metric(

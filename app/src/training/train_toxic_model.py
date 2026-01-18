@@ -13,11 +13,9 @@ from transformers import (
     TrainingArguments,
 )
 
-
 DATA_PATH = "app/data/labeled.csv"
 BASE_MODEL = "cointegrated/rubert-tiny2"
 OUTPUT_DIR = "models/rubert-tiny2-toxicity-custom"
-
 
 @dataclass
 class ModelConfig:
@@ -54,7 +52,7 @@ def main():
 
     print("Loading data...")
     dataset = load_data(DATA_PATH)
-    # Простое разбиение train/validation
+
     dataset = dataset.train_test_split(test_size=0.1, seed=42)
 
     print("Loading tokenizer and base model...")
@@ -125,7 +123,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # Используем GPU, если доступен
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
     main()

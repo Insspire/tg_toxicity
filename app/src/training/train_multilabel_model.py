@@ -19,19 +19,16 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support, ham
 
 DATA_PATH = "app/data/dataset.txt"
 HARD_NEGATIVES_PATH = "app/data/Inappapropriate_messages.csv"
-# Базовая модель: если есть обученная multilabel — дообучаем её, иначе — toxicity
+
 MULTILABEL_MODEL = "models/rubert-tiny2-multilabel-custom"
 BASE_MODEL_TOXICITY = "models/rubert-tiny2-toxicity-custom"
 OUTPUT_DIR = "models/rubert-tiny2-multilabel-custom"
 
-# Hard negatives: порог inappropriate (тексты с грубым/мат — но не оскорбления)
-# и лимит примеров, чтобы не перегрузить датасет
-INAPPROPRIATE_MIN = 0.6  # >= : грубый язык, но учим как NORMAL (не INSULT)
-MAX_HARD_NEGATIVES = 50_000
 
-# Метки для классификации (английские — в датасете в файле)
+INAPPROPRIATE_MIN = 0.6
+MAX_HARD_NEGATIVES = 50000
+
 LABELS = ["NORMAL", "INSULT", "THREAT", "OBSCENITY"]
-# Русские метки для отображения пользователям
 LABELS_RU = ["Нейтральный", "Оскорбление", "Угроза", "Непристойность"]
 LABEL_TO_ID = {label: idx for idx, label in enumerate(LABELS)}
 NUM_LABELS = len(LABELS)
@@ -49,10 +46,6 @@ class ModelConfig:
 
 
 def parse_dataset_line(line: str) -> tuple[str, List[int]]:
-    """
-    Парсит строку формата: __label__LABEL1,__label__LABEL2 текст
-    Возвращает (текст, список индексов меток)
-    """
     line = line.strip()
     if not line:
         return "", [0]  # NORMAL по умолчанию
@@ -87,7 +80,7 @@ def load_hard_negatives(
     """
     Загружает hard negatives из Inappapropriate_messages.csv.
     Тексты с высоким inappropriate (грубый язык, мат) помечаются как NORMAL [1,0,0,0],
-    чтобы модель не считала любой мат оскорблением (могло быть восхищение, экспрессия и т.п.).
+    чтобы модель не считала любой мат оскорблением (могло быть восхищение и т.п.).
     """
     if not os.path.exists(path):
         print(f"Hard negatives: файл {path} не найден, пропуск.")
@@ -102,11 +95,9 @@ def load_hard_negatives(
     df["text"] = df["text"].astype(str).str.strip()
     df["inappropriate"] = pd.to_numeric(df["inappropriate"], errors="coerce").fillna(0)
 
-    # только с высоким inappropriate (есть грубый/неприличный язык)
     mask = df["inappropriate"] >= min_inappropriate
     df = df[mask].drop_duplicates(subset=["text"])
 
-    # не дублировать основной датасет
     if exclude_texts:
         df = df[~df["text"].isin(exclude_texts)]
 
@@ -114,7 +105,6 @@ def load_hard_negatives(
     if len(df) > max_samples:
         df = df.sample(n=max_samples, random_state=42)
 
-    # метка: только NORMAL (не INSULT, не THREAT, не OBSCENITY)
     label_vector = [1, 0, 0, 0]
     labels = [label_vector] * len(df)
     ds = Dataset.from_dict({"text": df["text"].tolist(), "labels": labels})
@@ -123,9 +113,6 @@ def load_hard_negatives(
 
 
 def load_data(path: str) -> Dataset:
-    """
-    Загружает данные из dataset.txt и преобразует в формат для обучения
-    """
     texts = []
     labels = []
     
@@ -142,13 +129,11 @@ def load_data(path: str) -> Dataset:
     
     print(f"Loaded {len(texts)} examples")
     
-    # Создаем DataFrame с текстами и метками
     df = pd.DataFrame({
         "text": texts,
         "labels": labels  # Список списков [0, 1, 0, 1] для каждого примера
     })
     
-    # Преобразуем в Dataset
     dataset = Dataset.from_pandas(df)
     
     return dataset
@@ -172,13 +157,11 @@ def main():
     dataset = load_data(DATA_PATH)
     main_texts = set(dataset["text"])
 
-    # Hard negatives: грубый/неприличный язык, но не оскорбления — как NORMAL
     hn = load_hard_negatives(HARD_NEGATIVES_PATH, exclude_texts=main_texts)
     if hn is not None and len(hn) > 0:
         dataset = concatenate_datasets([dataset, hn])
         print(f"Объединённый датасет: {len(dataset)} примеров")
 
-    # Разбиение train/validation
     dataset = dataset.train_test_split(test_size=0.1, seed=42)
 
     from transformers import AutoConfig
@@ -199,7 +182,6 @@ def main():
     model_config = AutoConfig.from_pretrained(BASE_MODEL)
 
     if model_config.num_labels == NUM_LABELS and getattr(model_config, "problem_type", "") == "multi_label_classification":
-        # Уже multilabel — загружаем как есть
         print("Loading multilabel model...")
         model = AutoModelForSequenceClassification.from_pretrained(BASE_MODEL)
     else:
@@ -277,7 +259,6 @@ def main():
             else:
                 batch["labels"] = labels_tensor
         else:
-            # Если labels нет, это ошибка - выводим предупреждение
             print("WARNING: labels not found in features!")
             print(f"Available keys: {first.keys()}")
         
@@ -315,7 +296,6 @@ def main():
         accuracy = accuracy_score(labels, preds)
         hamming = hamming_loss(labels, preds)
         
-        # Precision, recall, F1 для каждого класса
         precision, recall, f1, _ = precision_recall_fscore_support(
             labels, preds, average="micro", zero_division=0
         )
@@ -356,7 +336,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # Используем GPU, если доступен
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
     main()
